@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { Lock, Mail, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -17,6 +18,7 @@ const authSchema = z.object({
 export default function Auth() {
   const [searchParams] = useSearchParams();
   const [isLogin, setIsLogin] = useState(searchParams.get("mode") !== "signup");
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -31,6 +33,47 @@ export default function Auth() {
       navigate("/");
     }
   }, [user, navigate]);
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrors({});
+
+    const emailResult = z.string().trim().email({ message: "Please enter a valid email address" }).safeParse(email);
+    if (!emailResult.success) {
+      setErrors({ email: emailResult.error.errors[0].message });
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Check your email",
+          description: "We've sent you a password reset link.",
+        });
+        setIsForgotPassword(false);
+      }
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "Something went wrong. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,6 +121,56 @@ export default function Auth() {
     }
   };
 
+  // Forgot password view
+  if (isForgotPassword) {
+    return (
+      <div className="min-h-screen gradient-dark flex items-center justify-center px-6 py-12">
+        <div className="w-full max-w-md">
+          <button 
+            onClick={() => setIsForgotPassword(false)}
+            className="inline-flex items-center gap-2 text-primary-foreground/70 hover:text-primary-foreground mb-8 transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Sign In
+          </button>
+
+          <div className="bg-card rounded-2xl p-8 shadow-card border border-border">
+            <h1 className="text-2xl font-bold text-foreground mb-2">
+              Forgot Password
+            </h1>
+            <p className="text-muted-foreground mb-8">
+              Enter your email and we'll send you a reset link.
+            </p>
+
+            <form onSubmit={handleForgotPassword} className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-foreground">Email</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                  <Input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@example.com"
+                    className="pl-10"
+                  />
+                </div>
+                {errors.email && (
+                  <p className="text-sm text-destructive">{errors.email}</p>
+                )}
+              </div>
+
+              <Button type="submit" className="w-full" variant="hero" disabled={loading}>
+                {loading ? "Please wait..." : "Send Reset Link"}
+              </Button>
+            </form>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen gradient-dark flex items-center justify-center px-6 py-12">
       <div className="w-full max-w-md">
@@ -119,7 +212,18 @@ export default function Auth() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-foreground">Password</Label>
+              <div className="flex justify-between items-center">
+                <Label htmlFor="password" className="text-foreground">Password</Label>
+                {isLogin && (
+                  <button
+                    type="button"
+                    onClick={() => setIsForgotPassword(true)}
+                    className="text-sm text-primary hover:underline"
+                  >
+                    Forgot password?
+                  </button>
+                )}
+              </div>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <Input
