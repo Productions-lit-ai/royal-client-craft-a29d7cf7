@@ -75,8 +75,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Decorative elements */}
-        <div className="absolute bottom-16 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent" />
       </section>
 
       {/* Features Section */}
