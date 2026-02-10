@@ -16,8 +16,10 @@ import {
   LogOut, 
   Upload,
   ArrowLeft,
-  Loader2
+  Loader2,
+  Mail
 } from "lucide-react";
+import ContactSubmissionsTable from "@/components/admin/ContactSubmissionsTable";
 import { Link } from "react-router-dom";
 
 export default function AdminDashboard() {
@@ -26,7 +28,7 @@ export default function AdminDashboard() {
   const { logoUrl, updateLogo } = useSiteLogo();
   const { toast } = useToast();
   
-  const [activeTab, setActiveTab] = useState<"content" | "logo">("content");
+  const [activeTab, setActiveTab] = useState<"content" | "logo" | "submissions">("content");
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -193,6 +195,17 @@ export default function AdminDashboard() {
             <Image className="h-4 w-4" />
             Site Logo
           </button>
+          <button
+            onClick={() => setActiveTab("submissions")}
+            className={`flex items-center gap-2 px-4 py-3 font-medium transition-colors ${
+              activeTab === "submissions"
+                ? "text-primary border-b-2 border-primary"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Mail className="h-4 w-4" />
+            Contact Submissions
+          </button>
         </div>
 
         {/* Content Tab */}
@@ -335,6 +348,17 @@ export default function AdminDashboard() {
                 </Button>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Submissions Tab */}
+        {activeTab === "submissions" && (
+          <div className="bg-card rounded-xl p-6 border border-border">
+            <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+              <Mail className="h-5 w-5 text-primary" />
+              Contact Form Submissions
+            </h2>
+            <ContactSubmissionsTable />
           </div>
         )}
       </div>
