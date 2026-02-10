@@ -21,25 +21,39 @@ export default function ResetPassword() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [ready, setReady] = useState(false);
   const [errors, setErrors] = useState<{ password?: string; confirmPassword?: string }>({});
   
   const { toast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if user arrived via password reset link
-    const hashParams = new URLSearchParams(window.location.hash.substring(1));
-    const type = hashParams.get("type");
-    
-    if (type !== "recovery") {
-      // If not a recovery flow, redirect to auth
-      toast({
-        title: "Invalid Link",
-        description: "This password reset link is invalid or has expired.",
-        variant: "destructive",
-      });
-      navigate("/auth");
-    }
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "PASSWORD_RECOVERY") {
+        setReady(true);
+      }
+    });
+
+    // Also check if already in a recovery session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        setReady(true);
+      } else {
+        // Give a moment for the auth state change to fire
+        setTimeout(() => {
+          if (!ready) {
+            toast({
+              title: "Invalid Link",
+              description: "This password reset link is invalid or has expired.",
+              variant: "destructive",
+            });
+            navigate("/auth");
+          }
+        }, 2000);
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, [navigate, toast]);
 
   const handleSubmit = async (e: React.FormEvent) => {
