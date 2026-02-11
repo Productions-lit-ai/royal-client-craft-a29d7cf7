@@ -41,6 +41,30 @@ export type Database = {
         }
         Relationships: []
       }
+      password_reset_logs: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          ip_hint: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          ip_hint?: string | null
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          ip_hint?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
       site_content: {
         Row: {
           content: string | null

@@ -10,9 +10,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { Lock, Mail, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 
+const passwordSchema = z
+  .string()
+  .min(8, { message: "Password must be at least 8 characters" })
+  .regex(/[A-Z]/, { message: "Password must contain at least 1 uppercase letter" })
+  .regex(/[0-9]/, { message: "Password must contain at least 1 number" });
+
 const authSchema = z.object({
   email: z.string().trim().email({ message: "Please enter a valid email address" }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters" }),
+  password: passwordSchema,
 });
 
 export default function Auth() {
@@ -47,29 +53,26 @@ export default function Auth() {
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
+      const response = await supabase.functions.invoke("request-password-reset", {
+        body: {
+          email: email.trim(),
+          redirectUrl: `${window.location.origin}/reset-password`,
+        },
       });
 
-      if (error) {
-        toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive",
-        });
-      } else {
-        toast({
-          title: "Check your email",
-          description: "We've sent you a password reset link.",
-        });
-        setIsForgotPassword(false);
-      }
-    } catch (err) {
+      // Always show generic message regardless of result
       toast({
-        title: "Error",
-        description: "Something went wrong. Please try again.",
-        variant: "destructive",
+        title: "Check your email",
+        description: "If this email exists, a reset link has been sent.",
       });
+      setIsForgotPassword(false);
+    } catch (err) {
+      // Still show generic message on error
+      toast({
+        title: "Check your email",
+        description: "If this email exists, a reset link has been sent.",
+      });
+      setIsForgotPassword(false);
     } finally {
       setLoading(false);
     }
@@ -79,15 +82,29 @@ export default function Auth() {
     e.preventDefault();
     setErrors({});
 
-    const result = authSchema.safeParse({ email, password });
-    if (!result.success) {
-      const fieldErrors: { email?: string; password?: string } = {};
-      result.error.errors.forEach((err) => {
-        if (err.path[0] === "email") fieldErrors.email = err.message;
-        if (err.path[0] === "password") fieldErrors.password = err.message;
-      });
-      setErrors(fieldErrors);
-      return;
+    if (isLogin) {
+      // For login, just validate email format and non-empty password
+      const emailResult = z.string().trim().email({ message: "Please enter a valid email address" }).safeParse(email);
+      if (!emailResult.success) {
+        setErrors({ email: emailResult.error.errors[0].message });
+        return;
+      }
+      if (!password) {
+        setErrors({ password: "Password is required" });
+        return;
+      }
+    } else {
+      // For signup, validate with full schema
+      const result = authSchema.safeParse({ email, password });
+      if (!result.success) {
+        const fieldErrors: { email?: string; password?: string } = {};
+        result.error.errors.forEach((err) => {
+          if (err.path[0] === "email") fieldErrors.email = err.message;
+          if (err.path[0] === "password") fieldErrors.password = err.message;
+        });
+        setErrors(fieldErrors);
+        return;
+      }
     }
 
     setLoading(true);
@@ -237,6 +254,11 @@ export default function Auth() {
               </div>
               {errors.password && (
                 <p className="text-sm text-destructive">{errors.password}</p>
+              )}
+              {!isLogin && (
+                <p className="text-xs text-muted-foreground">
+                  Min 8 characters, 1 uppercase letter, 1 number
+                </p>
               )}
             </div>
 

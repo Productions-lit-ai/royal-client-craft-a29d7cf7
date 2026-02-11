@@ -6,12 +6,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Lock, ArrowLeft } from "lucide-react";
+import { Lock, ArrowLeft, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 
+const passwordField = z
+  .string()
+  .min(8, { message: "Password must be at least 8 characters" })
+  .regex(/[A-Z]/, { message: "Password must contain at least 1 uppercase letter" })
+  .regex(/[0-9]/, { message: "Password must contain at least 1 number" });
+
 const passwordSchema = z.object({
-  password: z.string().min(6, { message: "Password must be at least 6 characters" }),
-  confirmPassword: z.string().min(6, { message: "Password must be at least 6 characters" }),
+  password: passwordField,
+  confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
@@ -22,38 +28,42 @@ export default function ResetPassword() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [ready, setReady] = useState(false);
+  const [success, setSuccess] = useState(false);
   const [errors, setErrors] = useState<{ password?: string; confirmPassword?: string }>({});
   
   const { toast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
+    let redirectTimeout: ReturnType<typeof setTimeout>;
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === "PASSWORD_RECOVERY") {
         setReady(true);
       }
     });
 
-    // Also check if already in a recovery session
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
         setReady(true);
       } else {
-        // Give a moment for the auth state change to fire
-        setTimeout(() => {
+        redirectTimeout = setTimeout(() => {
           if (!ready) {
             toast({
-              title: "Invalid Link",
-              description: "This password reset link is invalid or has expired.",
+              title: "Invalid or Expired Link",
+              description: "This password reset link is invalid or has expired. Please request a new one.",
               variant: "destructive",
             });
             navigate("/auth");
           }
-        }, 2000);
+        }, 3000);
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(redirectTimeout);
+    };
   }, [navigate, toast]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -83,11 +93,10 @@ export default function ResetPassword() {
           variant: "destructive",
         });
       } else {
-        toast({
-          title: "Password Updated",
-          description: "Your password has been successfully reset.",
-        });
-        navigate("/auth");
+        setSuccess(true);
+        // Sign out so user logs in with new password
+        await supabase.auth.signOut();
+        setTimeout(() => navigate("/auth"), 3000);
       }
     } catch (err) {
       toast({
@@ -99,6 +108,27 @@ export default function ResetPassword() {
       setLoading(false);
     }
   };
+
+  if (success) {
+    return (
+      <div className="min-h-screen gradient-dark flex items-center justify-center px-6 py-12">
+        <div className="w-full max-w-md">
+          <div className="bg-card rounded-2xl p-8 shadow-card border border-border text-center">
+            <CheckCircle className="h-16 w-16 text-primary mx-auto mb-4" />
+            <h1 className="text-2xl font-bold text-foreground mb-2">
+              Password Successfully Updated
+            </h1>
+            <p className="text-muted-foreground mb-6">
+              Your password has been changed. Redirecting you to sign in...
+            </p>
+            <Button asChild variant="hero" className="w-full">
+              <Link to="/auth">Sign In Now</Link>
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen gradient-dark flex items-center justify-center px-6 py-12">
@@ -136,6 +166,9 @@ export default function ResetPassword() {
               {errors.password && (
                 <p className="text-sm text-destructive">{errors.password}</p>
               )}
+              <p className="text-xs text-muted-foreground">
+                Min 8 characters, 1 uppercase letter, 1 number
+              </p>
             </div>
 
             <div className="space-y-2">
@@ -156,7 +189,7 @@ export default function ResetPassword() {
               )}
             </div>
 
-            <Button type="submit" className="w-full" variant="hero" disabled={loading}>
+            <Button type="submit" className="w-full" variant="hero" disabled={loading || !ready}>
               {loading ? "Please wait..." : "Reset Password"}
             </Button>
           </form>

@@ -17,9 +17,11 @@ import {
   Upload,
   ArrowLeft,
   Loader2,
-  Mail
+  Mail,
+  KeyRound
 } from "lucide-react";
 import ContactSubmissionsTable from "@/components/admin/ContactSubmissionsTable";
+import PasswordResetLogsTable from "@/components/admin/PasswordResetLogsTable";
 import { Link } from "react-router-dom";
 
 export default function AdminDashboard() {
@@ -28,7 +30,7 @@ export default function AdminDashboard() {
   const { logoUrl, updateLogo } = useSiteLogo();
   const { toast } = useToast();
   
-  const [activeTab, setActiveTab] = useState<"content" | "logo" | "submissions">("content");
+  const [activeTab, setActiveTab] = useState<"content" | "logo" | "submissions" | "reset-logs">("content");
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -206,6 +208,17 @@ export default function AdminDashboard() {
             <Mail className="h-4 w-4" />
             Contact Submissions
           </button>
+          <button
+            onClick={() => setActiveTab("reset-logs")}
+            className={`flex items-center gap-2 px-4 py-3 font-medium transition-colors ${
+              activeTab === "reset-logs"
+                ? "text-primary border-b-2 border-primary"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <KeyRound className="h-4 w-4" />
+            Password Resets
+          </button>
         </div>
 
         {/* Content Tab */}
@@ -359,6 +372,17 @@ export default function AdminDashboard() {
               Contact Form Submissions
             </h2>
             <ContactSubmissionsTable />
+          </div>
+        )}
+
+        {/* Password Reset Logs Tab */}
+        {activeTab === "reset-logs" && (
+          <div className="bg-card rounded-xl p-6 border border-border">
+            <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+              <KeyRound className="h-5 w-5 text-primary" />
+              Password Reset Activity
+            </h2>
+            <PasswordResetLogsTable />
           </div>
         )}
       </div>
