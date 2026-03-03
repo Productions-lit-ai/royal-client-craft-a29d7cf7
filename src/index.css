@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+#lovable-badge {
+  display: none !important;
+}
+
 /* LIT PRODUCTIONS - Royal Purple Premium Design System */
 
 @layer base {
