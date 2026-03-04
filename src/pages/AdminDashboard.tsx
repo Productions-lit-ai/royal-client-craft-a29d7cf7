@@ -18,8 +18,10 @@ import {
   ArrowLeft,
   Loader2,
   Mail,
-  KeyRound
+  KeyRound,
+  Globe
 } from "lucide-react";
+import PortfolioManager from "@/components/admin/PortfolioManager";
 import ContactSubmissionsTable from "@/components/admin/ContactSubmissionsTable";
 import PasswordResetLogsTable from "@/components/admin/PasswordResetLogsTable";
 import { Link } from "react-router-dom";
@@ -30,7 +32,7 @@ export default function AdminDashboard() {
   const { logoUrl, updateLogo } = useSiteLogo();
   const { toast } = useToast();
   
-  const [activeTab, setActiveTab] = useState<"content" | "logo" | "submissions" | "reset-logs">("content");
+  const [activeTab, setActiveTab] = useState<"content" | "logo" | "submissions" | "reset-logs" | "portfolio">("content");
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -219,6 +221,17 @@ export default function AdminDashboard() {
             <KeyRound className="h-4 w-4" />
             Password Resets
           </button>
+          <button
+            onClick={() => setActiveTab("portfolio")}
+            className={`flex items-center gap-2 px-4 py-3 font-medium transition-colors ${
+              activeTab === "portfolio"
+                ? "text-primary border-b-2 border-primary"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Globe className="h-4 w-4" />
+            Portfolio
+          </button>
         </div>
 
         {/* Content Tab */}
@@ -383,6 +396,17 @@ export default function AdminDashboard() {
               Password Reset Activity
             </h2>
             <PasswordResetLogsTable />
+          </div>
+        )}
+
+        {/* Portfolio Tab */}
+        {activeTab === "portfolio" && (
+          <div className="bg-card rounded-xl p-6 border border-border">
+            <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+              <Globe className="h-5 w-5 text-primary" />
+              Manage Portfolio
+            </h2>
+            <PortfolioManager />
           </div>
         )}
       </div>
