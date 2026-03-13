@@ -234,6 +234,17 @@ export default function AdminDashboard() {
             <Globe className="h-4 w-4" />
             Portfolio
           </button>
+          <button
+            onClick={() => setActiveTab("social")}
+            className={`flex items-center gap-2 px-4 py-3 font-medium transition-colors ${
+              activeTab === "social"
+                ? "text-primary border-b-2 border-primary"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Share2 className="h-4 w-4" />
+            Social Links
+          </button>
         </div>
 
         {/* Content Tab */}
