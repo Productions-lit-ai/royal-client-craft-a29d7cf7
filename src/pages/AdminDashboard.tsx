@@ -422,6 +422,18 @@ export default function AdminDashboard() {
             <PortfolioManager />
           </div>
         )}
+
+        {/* Social Links Tab */}
+        {activeTab === "social" && (
+          <div className="bg-card rounded-xl p-6 border border-border">
+            <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+              <Share2 className="h-5 w-5 text-primary" />
+              Social Media Links
+            </h2>
+            <SocialLinksManager />
+          </div>
+        )}
+      </div>
       </div>
     </div>
   );
