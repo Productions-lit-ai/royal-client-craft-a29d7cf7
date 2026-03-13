@@ -19,11 +19,13 @@ import {
   Loader2,
   Mail,
   KeyRound,
-  Globe
+  Globe,
+  Share2
 } from "lucide-react";
 import PortfolioManager from "@/components/admin/PortfolioManager";
 import ContactSubmissionsTable from "@/components/admin/ContactSubmissionsTable";
 import PasswordResetLogsTable from "@/components/admin/PasswordResetLogsTable";
+import SocialLinksManager from "@/components/admin/SocialLinksManager";
 import { Link } from "react-router-dom";
 
 export default function AdminDashboard() {
