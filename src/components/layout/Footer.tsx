@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
+import { FaInstagram, FaXTwitter, FaTiktok } from "react-icons/fa6";
 import logo from "@/assets/logo.png";
+import { useSocialLinks } from "@/hooks/useSocialLinks";
 
 const footerLinks = [
   { name: "Home", path: "/" },
@@ -8,7 +10,15 @@ const footerLinks = [
   { name: "Privacy Policy", path: "/privacy" },
 ];
 
+const socialIcons = [
+  { key: "instagram" as const, icon: FaInstagram, label: "Instagram", hoverClass: "hover:text-pink-500" },
+  { key: "x" as const, icon: FaXTwitter, label: "X", hoverClass: "hover:text-primary-foreground" },
+  { key: "tiktok" as const, icon: FaTiktok, label: "TikTok", hoverClass: "hover:text-primary-foreground" },
+];
+
 export function Footer() {
+  const { links } = useSocialLinks();
+
   return (
     <footer className="gradient-dark text-sidebar-foreground">
       <div className="container mx-auto px-6 py-12 lg:pl-80">
@@ -21,6 +31,25 @@ export function Footer() {
                 <h3 className="text-lg font-bold text-primary-foreground">LIT PRODUCTIONS</h3>
                 <p className="text-xs text-sidebar-foreground/60 tracking-wider">Building Digital Excellence</p>
               </div>
+            </div>
+            {/* Social Media Icons */}
+            <div className="flex items-center gap-4 mt-2">
+              {socialIcons.map(({ key, icon: Icon, label, hoverClass }) => {
+                const url = links[key];
+                if (!url) return null;
+                return (
+                  <a
+                    key={key}
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={label}
+                    className={`text-sidebar-foreground/70 ${hoverClass} transition-colors`}
+                  >
+                    <Icon className="h-5 w-5" />
+                  </a>
+                );
+              })}
             </div>
           </div>
 

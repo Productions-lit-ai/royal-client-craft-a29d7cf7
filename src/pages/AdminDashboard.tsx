@@ -34,7 +34,7 @@ export default function AdminDashboard() {
   const { logoUrl, updateLogo } = useSiteLogo();
   const { toast } = useToast();
   
-  const [activeTab, setActiveTab] = useState<"content" | "logo" | "submissions" | "reset-logs" | "portfolio">("content");
+  const [activeTab, setActiveTab] = useState<"content" | "logo" | "submissions" | "reset-logs" | "portfolio" | "social">("content");
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
