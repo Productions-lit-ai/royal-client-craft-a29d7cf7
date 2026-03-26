@@ -22,32 +22,9 @@ export default function SocialLinksManager() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const { useSocialLinks } = await import("@/hooks/useSocialLinks");
-      // Re-instantiate to call updateLink
-      const { updateLink } = useSocialLinks();
-      // Actually we need to use supabase directly here
-      const { supabase } = await import("@/integrations/supabase/client");
-
       for (const [platform, url] of Object.entries(formData)) {
-        const key = `social_${platform}`;
-        const { data: existing } = await supabase
-          .from("site_settings")
-          .select("id")
-          .eq("key", key)
-          .maybeSingle();
-
-        if (existing) {
-          await supabase
-            .from("site_settings")
-            .update({ value: url, updated_at: new Date().toISOString() })
-            .eq("key", key);
-        } else {
-          await supabase
-            .from("site_settings")
-            .insert({ key, value: url });
-        }
+        await updateLink(platform as keyof typeof formData, url);
       }
-
       toast({ title: "Social links saved", description: "Your social media links have been updated." });
     } catch (error) {
       toast({ title: "Error", description: "Failed to save social links.", variant: "destructive" });
