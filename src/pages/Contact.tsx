@@ -118,11 +118,21 @@ export default function Contact() {
     setIsSubmitting(true);
 
     try {
-      const { error } = await supabase.functions.invoke('send-contact-email', {
+      const { data, error } = await supabase.functions.invoke('send-contact-email', {
         body: result.data,
       });
 
       if (error) throw error;
+
+      // Check for monthly limit response
+      if (data?.error) {
+        toast({
+          title: "Submission limit reached",
+          description: data.error,
+          variant: "destructive",
+        });
+        return;
+      }
 
       toast({
         title: "Message Sent Successfully!",
