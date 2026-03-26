@@ -156,11 +156,7 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Store submission in database using service role
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
-
+    // Store submission in database
     const { error: dbError } = await supabaseAdmin
       .from("contact_submissions")
       .insert({
