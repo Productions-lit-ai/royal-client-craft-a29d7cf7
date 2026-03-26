@@ -8,7 +8,7 @@ import { FaInstagram, FaXTwitter, FaTiktok } from "react-icons/fa6";
 import { useToast } from "@/hooks/use-toast";
 
 export default function SocialLinksManager() {
-  const { links, loading } = useSocialLinks();
+  const { links, loading, updateLink } = useSocialLinks();
   const { toast } = useToast();
   const [formData, setFormData] = useState({ instagram: "", x: "", tiktok: "" });
   const [saving, setSaving] = useState(false);
