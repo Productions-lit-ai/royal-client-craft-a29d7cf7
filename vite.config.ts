@@ -11,10 +11,8 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react(),
-    cloudflare(),
-    mode === "development" && componentTagger?.(),
+    cloudflare()
   ].filter(Boolean),
-
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
