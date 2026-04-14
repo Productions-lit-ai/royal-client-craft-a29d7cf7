@@ -1,68 +1,206 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+#lovable-badge {
+  display: none !important;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
+/* LIT PRODUCTIONS - Royal Purple Premium Design System */
 
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
+@layer base {
   :root {
-    color: #213547;
-    background-color: #ffffff;
+    /* Royal Purple Theme - Light Mode */
+    --background: 270 30% 98%;
+    --foreground: 270 50% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 270 50% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 270 50% 10%;
+
+    /* Deep Royal Purple */
+    --primary: 270 70% 35%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Light Purple */
+    --secondary: 270 30% 92%;
+    --secondary-foreground: 270 50% 20%;
+
+    --muted: 270 20% 94%;
+    --muted-foreground: 270 15% 45%;
+
+    /* Gold Accent */
+    --accent: 45 90% 55%;
+    --accent-foreground: 270 50% 10%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 270 20% 88%;
+    --input: 270 20% 88%;
+    --ring: 270 70% 35%;
+
+    --radius: 0.75rem;
+
+    /* Custom tokens */
+    --purple-glow: 270 80% 60%;
+    --gold: 45 90% 55%;
+    --gold-light: 45 80% 70%;
+    --silver: 220 15% 85%;
+
+    /* Gradients */
+    --gradient-royal: linear-gradient(135deg, hsl(270 70% 25%) 0%, hsl(270 60% 45%) 50%, hsl(280 70% 55%) 100%);
+    --gradient-gold: linear-gradient(135deg, hsl(45 90% 55%) 0%, hsl(40 85% 65%) 100%);
+    --gradient-dark: linear-gradient(180deg, hsl(270 50% 8%) 0%, hsl(270 40% 15%) 100%);
+
+    /* Shadows */
+    --shadow-glow: 0 0 60px hsl(270 80% 60% / 0.3);
+    --shadow-card: 0 10px 40px hsl(270 50% 20% / 0.1);
+
+    /* Sidebar */
+    --sidebar-background: 270 50% 8%;
+    --sidebar-foreground: 270 20% 90%;
+    --sidebar-primary: 270 70% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 270 40% 15%;
+    --sidebar-accent-foreground: 270 20% 90%;
+    --sidebar-border: 270 30% 20%;
+    --sidebar-ring: 270 70% 50%;
   }
-  a:hover {
-    color: #747bff;
+
+  .dark {
+    --background: 270 50% 5%;
+    --foreground: 270 10% 95%;
+
+    --card: 270 40% 10%;
+    --card-foreground: 270 10% 95%;
+
+    --popover: 270 40% 10%;
+    --popover-foreground: 270 10% 95%;
+
+    --primary: 270 60% 60%;
+    --primary-foreground: 270 50% 5%;
+
+    --secondary: 270 30% 15%;
+    --secondary-foreground: 270 10% 90%;
+
+    --muted: 270 25% 15%;
+    --muted-foreground: 270 15% 60%;
+
+    --accent: 45 85% 60%;
+    --accent-foreground: 270 50% 5%;
+
+    --destructive: 0 70% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 270 25% 20%;
+    --input: 270 25% 20%;
+    --ring: 270 60% 60%;
+
+    --sidebar-background: 270 50% 5%;
+    --sidebar-foreground: 270 10% 90%;
+    --sidebar-primary: 270 60% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 270 30% 12%;
+    --sidebar-accent-foreground: 270 10% 90%;
+    --sidebar-border: 270 25% 15%;
+    --sidebar-ring: 270 60% 60%;
   }
-  button {
-    background-color: #f9f9f9;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer utilities {
+  .gradient-royal {
+    background: var(--gradient-royal);
+  }
+
+  .gradient-dark {
+    background: var(--gradient-dark);
+  }
+
+  .text-gradient-gold {
+    background: var(--gradient-gold);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .glow-purple {
+    box-shadow: var(--shadow-glow);
+  }
+
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+}
+
+@layer components {
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-out forwards;
+  }
+
+  .animate-fade-in-delay {
+    animation: fadeIn 0.6s ease-out 0.2s forwards;
+    opacity: 0;
+  }
+
+  .animate-fade-in-delay-2 {
+    animation: fadeIn 0.6s ease-out 0.4s forwards;
+    opacity: 0;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.8s ease-out forwards;
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
   }
 }
