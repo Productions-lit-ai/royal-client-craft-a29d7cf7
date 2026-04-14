@@ -4,7 +4,6 @@ import { Menu, X, Home, Users, Mail, Settings, Globe, Sun, Moon } from "lucide-r
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { useSiteLogo } from "@/hooks/useSiteLogo";
-import { useTheme } from "@/hooks/useTheme";
 
 const navItems = [
   { name: "Home", path: "/", icon: Home },
@@ -18,7 +17,6 @@ export function Navigation() {
   const location = useLocation();
   const { isAdmin } = useAuth();
   const { logoUrl } = useSiteLogo();
-  const { theme, toggleTheme } = useTheme();
 
   return (
     <>
